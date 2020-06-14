@@ -12,6 +12,7 @@
 *.gz
 *.xz
 *.sha256
+/docs/*.md
 /out/
 /vendor/
 /_workspace/
