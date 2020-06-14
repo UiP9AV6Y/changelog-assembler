@@ -16,15 +16,12 @@ type ReasonCommand struct {
 	Component    string
 	MergeRequest int
 
-	writer  *change.Writer
-	command *cobra.Command
+	writer *change.Writer
+
+	CommandBase
 }
 
-func (c *ReasonCommand) Register(cmd *cobra.Command) {
-	cmd.AddCommand(c.command)
-}
-
-func (c *ReasonCommand) RunE(cmd *cobra.Command, args []string) error {
+func (c *ReasonCommand) RunE(_ *cobra.Command, args []string) error {
 	entry := change.NewEntry()
 
 	entry.Title = strings.Join(args, " ")
@@ -49,12 +46,13 @@ func NewReasonCommand(reason change.Reason, output io.EntityWriter) *ReasonComma
 		writer: writer,
 	}
 	cmd := &cobra.Command{
-		Use:          reason.String(),
-		Short:        fmt.Sprintf("Create a new %q changelog entry", reason),
-		RunE:         command.RunE,
-		Aliases:      []string{reason.Alias()},
-		Args:         cobra.MinimumNArgs(1),
-		SilenceUsage: true,
+		Use:               reason.String(),
+		Short:             fmt.Sprintf("Create a new %q changelog entry", reason),
+		RunE:              command.RunE,
+		Aliases:           []string{reason.Alias()},
+		Args:              cobra.MinimumNArgs(1),
+		SilenceUsage:      true,
+		DisableAutoGenTag: true,
 	}
 
 	decorateReasonFlags(cmd, writer, command)

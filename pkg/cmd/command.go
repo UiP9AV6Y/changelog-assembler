@@ -5,5 +5,13 @@ import (
 )
 
 type Command interface {
-	Register(cmd *cobra.Command)
+	Command() *cobra.Command
+}
+
+type CommandBase struct {
+	command *cobra.Command
+}
+
+func (b *CommandBase) Command() *cobra.Command {
+	return b.command
 }

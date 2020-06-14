@@ -12,15 +12,12 @@ import (
 )
 
 type CreateCommand struct {
-	writer  *change.Writer
-	command *cobra.Command
+	writer *change.Writer
+
+	CommandBase
 }
 
-func (c *CreateCommand) Register(cmd *cobra.Command) {
-	cmd.AddCommand(c.command)
-}
-
-func (c *CreateCommand) RunE(cmd *cobra.Command, args []string) error {
+func (c *CreateCommand) RunE(_ *cobra.Command, args []string) error {
 	entry := change.NewEntry()
 	prompt := change.NewEntryPrompt(change.TargetUiApi())
 
@@ -49,13 +46,14 @@ func NewCreateCommand(output io.EntityWriter) *CreateCommand {
 		writer: writer,
 	}
 	cmd := &cobra.Command{
-		Use:          "create",
-		Short:        "Interactively create a new changelog entry",
-		Long:         "Interactive prompt for creating a new changelog entry",
-		RunE:         command.RunE,
-		Aliases:      []string{"new"},
-		Args:         cobra.ArbitraryArgs,
-		SilenceUsage: true,
+		Use:               "create",
+		Short:             "Interactively create a new changelog entry",
+		Long:              "Interactive prompt for creating a new changelog entry",
+		RunE:              command.RunE,
+		Aliases:           []string{"new"},
+		Args:              cobra.ArbitraryArgs,
+		SilenceUsage:      true,
+		DisableAutoGenTag: true,
 	}
 
 	decorateCreateFlags(cmd, writer)

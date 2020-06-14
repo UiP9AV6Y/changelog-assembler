@@ -7,19 +7,7 @@ import (
 )
 
 type RootCommand struct {
-	command *cobra.Command
-}
-
-func (c *RootCommand) Register(cmd *cobra.Command) {
-	cmd.AddCommand(c.command)
-}
-
-func (c *RootCommand) RegisterCommand(cmd Command) {
-	cmd.Register(c.command)
-}
-
-func (c *RootCommand) Execute() error {
-	return c.command.Execute()
+	CommandBase
 }
 
 func NewRootCommand(application string) *RootCommand {
@@ -35,6 +23,7 @@ file, while contributors work on dedicated files.`,
 		Annotations: map[string]string{
 			"commit": version.Commit(),
 		},
+		DisableAutoGenTag: true,
 	}
 
 	cmd.SetVersionTemplate("{{.Version}}-{{.Annotations.commit}}\n")

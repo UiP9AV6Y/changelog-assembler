@@ -13,14 +13,11 @@ type VersionCommand struct {
 	VersionCommit bool
 
 	application string
-	command     *cobra.Command
+
+	CommandBase
 }
 
-func (c *VersionCommand) Register(cmd *cobra.Command) {
-	cmd.AddCommand(c.command)
-}
-
-func (c *VersionCommand) Run(cmd *cobra.Command, args []string) {
+func (c *VersionCommand) Run(_ *cobra.Command, args []string) {
 	if c.VersionShort && c.VersionCommit {
 		fmt.Println(version.Version() + "-" + version.Commit())
 	} else if c.VersionShort {
@@ -37,13 +34,14 @@ func NewVersionCommand(application string) *VersionCommand {
 		application: application,
 	}
 	cmd := &cobra.Command{
-		Use:          "version",
-		Short:        "Print the version number of " + application,
-		Long:         `Emit the application version to stdout and exit.`,
-		Run:          command.Run,
-		SuggestFor:   []string{"info"},
-		Args:         cobra.NoArgs,
-		SilenceUsage: true,
+		Use:               "version",
+		Short:             "Print the version number of " + application,
+		Long:              `Emit the application version to stdout and exit.`,
+		Run:               command.Run,
+		SuggestFor:        []string{"info"},
+		Args:              cobra.NoArgs,
+		SilenceUsage:      true,
+		DisableAutoGenTag: true,
 	}
 
 	decorateVersionFlags(cmd, command)

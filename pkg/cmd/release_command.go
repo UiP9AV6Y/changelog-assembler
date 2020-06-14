@@ -11,14 +11,11 @@ import (
 
 type ReleaseCommand struct {
 	changelog *release.Changelog
-	command   *cobra.Command
+
+	CommandBase
 }
 
-func (c *ReleaseCommand) Register(cmd *cobra.Command) {
-	cmd.AddCommand(c.command)
-}
-
-func (c *ReleaseCommand) RunE(cmd *cobra.Command, args []string) error {
+func (c *ReleaseCommand) RunE(_ *cobra.Command, args []string) error {
 	return c.changelog.Write(args[0])
 }
 
@@ -34,10 +31,11 @@ func NewReleaseCommand(input io.EntityReader, ioFactory io.IOFactory) *ReleaseCo
 		Long: `Concatenates changelog fragments
 in preparation of a new release
 of your application`,
-		RunE:         command.RunE,
-		Aliases:      []string{"assemble", "build"},
-		Args:         cobra.ExactArgs(1),
-		SilenceUsage: true,
+		RunE:              command.RunE,
+		Aliases:           []string{"assemble", "build"},
+		Args:              cobra.ExactArgs(1),
+		SilenceUsage:      true,
+		DisableAutoGenTag: true,
 	}
 
 	decorateReleaseFlags(cmd, renderer, changelog)

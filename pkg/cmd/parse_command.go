@@ -10,15 +10,12 @@ import (
 )
 
 type ParseCommand struct {
-	parser  *release.Parser
-	command *cobra.Command
+	parser *release.Parser
+
+	CommandBase
 }
 
-func (c *ParseCommand) Register(cmd *cobra.Command) {
-	cmd.AddCommand(c.command)
-}
-
-func (c *ParseCommand) RunE(cmd *cobra.Command, args []string) error {
+func (c *ParseCommand) RunE(_ *cobra.Command, args []string) error {
 	return c.parser.Read(args[0])
 }
 
@@ -32,11 +29,12 @@ func NewParseCommand(ios io.IOFactory) *ParseCommand {
 		Short: "Parse the changes for a specific version",
 		Long: `Parses a previously generated changelog
 to extract the changes of the given version`,
-		RunE:         command.RunE,
-		Aliases:      []string{"extract", "cut"},
-		SuggestFor:   []string{"grep", "find", "show"},
-		Args:         cobra.ExactArgs(1),
-		SilenceUsage: true,
+		RunE:              command.RunE,
+		Aliases:           []string{"extract", "cut"},
+		SuggestFor:        []string{"grep", "find", "show"},
+		Args:              cobra.ExactArgs(1),
+		SilenceUsage:      true,
+		DisableAutoGenTag: true,
 	}
 
 	decorateParseFlags(cmd, parser)

@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	DefaultOutputFile = "CHANGELOG.md"
+	DefaultOutputFile      = "CHANGELOG.md"
 	StartDelimiterTemplate = `<a name="%s"></a>`
-	EndDelimiterTemplate = `<!-- changelog-assembler: %s -->`
+	EndDelimiterTemplate   = `<!-- changelog-assembler: %s -->`
 )
 
 type Renderer struct {
