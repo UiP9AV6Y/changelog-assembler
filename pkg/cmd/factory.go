@@ -12,7 +12,7 @@ func New(application string) Command {
 	output := io.NewEntityIOWriter(stream, serializer)
 	rootCmd := NewRootCommand(application)
 	cmds := []Command{
-		NewVersionCommand(application),
+		NewVersionCommand(),
 		NewReleaseCommand(input, stream),
 		NewCreateCommand(output),
 		NewParseCommand(stream),

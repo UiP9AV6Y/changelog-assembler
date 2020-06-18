@@ -1,43 +1,61 @@
 package cmd
 
 import (
-	"fmt"
+	"os"
+	"text/template"
 
 	"github.com/spf13/cobra"
 
 	"github.com/UiP9AV6Y/changelog-assembler/pkg/version"
 )
 
-type VersionCommand struct {
-	VersionShort  bool
-	VersionCommit bool
+const DefaultVersionFormat = `Version: {{ .Version }}
+Commit: {{ .Commit }}
+Build Date: {{ .BuildDate }}
+Go Version: {{ .GoVersion }}
+Compiler: {{ .Compiler }}
+Platform: {{ .Platform }}
+`
 
-	application string
+type VersionCommand struct {
+	Format string
 
 	CommandBase
 }
 
-func (c *VersionCommand) Run(_ *cobra.Command, args []string) {
-	if c.VersionShort && c.VersionCommit {
-		fmt.Println(version.Version() + "-" + version.Commit())
-	} else if c.VersionShort {
-		fmt.Println(version.Version())
-	} else if c.VersionCommit {
-		fmt.Println(version.Commit())
-	} else {
-		fmt.Println(version.Application(c.application))
+func (c *VersionCommand) RunE(_ *cobra.Command, args []string) error {
+	format := c.Format
+
+	if len(format) == 0 {
+		format = DefaultVersionFormat
 	}
+
+	tmpl, err := template.New("version").Parse(format)
+	if err != nil {
+		return err
+	}
+
+	info := version.NewInfo()
+	err = tmpl.Execute(os.Stdout, info)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func NewVersionCommand(application string) *VersionCommand {
+func NewVersionCommand() *VersionCommand {
 	command := &VersionCommand{
-		application: application,
+		// do not initialize Format with DefaultVersionFormat here
+		// as it would be used in the help message of this command
+		// (which would bloat the help message due to the length of
+		// the default value)
 	}
 	cmd := &cobra.Command{
 		Use:               "version",
-		Short:             "Print the version number of " + application,
-		Long:              `Emit the application version to stdout and exit.`,
-		Run:               command.Run,
+		Short:             "Show version information",
+		Long:              `Render the application version to stdout and exit.`,
+		RunE:              command.RunE,
 		SuggestFor:        []string{"info"},
 		Args:              cobra.NoArgs,
 		SilenceUsage:      true,
@@ -53,6 +71,5 @@ func NewVersionCommand(application string) *VersionCommand {
 
 func decorateVersionFlags(cmd *cobra.Command,
 	store *VersionCommand) {
-	cmd.Flags().BoolVarP(&store.VersionShort, "short", "s", store.VersionShort, "Emit only the version number")
-	cmd.Flags().BoolVarP(&store.VersionCommit, "commit", "c", store.VersionCommit, "Emit the version control reference identifier")
+	cmd.Flags().StringVarP(&store.Format, "format", "f", store.Format, "Render the output using the provided Go template")
 }

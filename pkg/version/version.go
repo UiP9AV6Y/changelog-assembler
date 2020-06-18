@@ -1,27 +1,43 @@
 package version
 
 import (
-	"fmt"
+	"runtime"
+	"time"
 )
 
 var (
 	version = "0.0.0"
 	commit  = "HEAD"
-	date    = "1970-01-01T00:00:00Z00:00"
+	date    = "1970-01-01T00:00:00+00:00"
 )
 
-func Version() string {
-	return version
+type Info struct {
+	Version   string
+	Commit    string
+	BuildDate time.Time
+	GoVersion string
+	Compiler  string
+	Platform  string
 }
 
-func Commit() string {
-	return commit
+// String returns info as a human-friendly version string.
+func (i Info) String() string {
+	return i.Version + "-" + i.Commit
 }
 
-func Date() string {
-	return date
-}
+func NewInfo() Info {
+	platform := runtime.GOOS + "/" + runtime.GOARCH
+	buildDate, err := time.Parse(time.RFC3339, date)
+	if err != nil {
+		buildDate = time.Unix(0, 0)
+	}
 
-func Application(application string) string {
-	return fmt.Sprintf("%s (%s-%s) [%s]", application, version, commit, date)
+	return Info{
+		Version:   version,
+		Commit:    commit,
+		BuildDate: buildDate,
+		GoVersion: runtime.Version(),
+		Compiler:  runtime.Compiler,
+		Platform:  platform,
+	}
 }

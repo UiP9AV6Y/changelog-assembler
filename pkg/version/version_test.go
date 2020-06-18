@@ -2,19 +2,30 @@ package version
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
+func TestInfoString(t *testing.T) {
 	version = "1.2.3"
 	commit = "mock"
-	date = "1970-01-01T00:00:00Z00:00"
+	date = "2009-02-13T23:31:30Z"
+
+	unit := NewInfo()
+	reference := time.Unix(1234567890, 0)
+
+	assert.Equal(t, "1.2.3-mock", unit.String())
+	assert.Equal(t, reference.String(), unit.BuildDate.String())
 }
 
-func TestApplication(t *testing.T) {
-	actual := Application("test")
-	expected := "test (1.2.3-mock) [1970-01-01T00:00:00Z00:00]"
+func TestInfoInvalidDate(t *testing.T) {
+	version = "1.2.3"
+	commit = "mock"
+	date = "bac gaff"
 
-	assert.Equal(t, expected, actual)
+	unit := NewInfo()
+	reference := time.Unix(0, 0)
+
+	assert.Equal(t, reference.String(), unit.BuildDate.String())
 }
