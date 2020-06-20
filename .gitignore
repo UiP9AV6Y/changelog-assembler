@@ -12,8 +12,9 @@
 *.gz
 *.xz
 *.sha256
+/docs/*.1
 /docs/*.md
 /out/
 /vendor/
 /_workspace/
-CHANGELOG.md.*
+CHANGELOG.*.md
