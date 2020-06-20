@@ -9,7 +9,7 @@ package tools
 //
 // nolint
 import (
-	_ "golang.org/x/tools/cmd/goimports"
-	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
 	_ "github.com/UiP9AV6Y/changelog-assembler/cmd/changelog-assembler"
+	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
+	_ "golang.org/x/tools/cmd/goimports"
 )
