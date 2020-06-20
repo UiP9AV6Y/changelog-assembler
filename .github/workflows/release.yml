@@ -31,12 +31,12 @@ jobs:
           GOOS: ${{ matrix.platform }}
           GOARCH: ${{ matrix.arch }}
       - uses: actions/upload-artifact@v2
-        if: {{ matrix.platform == 'windows' }}
+        if: ${{ matrix.platform == 'windows' }}
         with:
           name: release-${{ github.sha }}
           path: '*.zip'
       - uses: actions/upload-artifact@v2
-        if: {{ matrix.platform != 'windows' }}
+        if: ${{ matrix.platform != 'windows' }}
         with:
           name: release-${{ github.sha }}
           path: '*.tar.gz'
