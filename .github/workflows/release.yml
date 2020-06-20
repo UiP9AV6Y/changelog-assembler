@@ -1,0 +1,67 @@
+---
+name: Release
+on:
+  push:
+    tags: ['*']
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }}/${{ matrix.arch }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [linux, darwin, windows]
+        arch: [amd64]
+        include:
+          - platform: linux
+            arch: arm64
+    steps:
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.14'
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - run: make CHANGELOG.tip.md binary-dist
+        env:
+          GOOS: ${{ matrix.platform }}
+          GOARCH: ${{ matrix.arch }}
+      - uses: actions/upload-artifact@v2
+        if: {{ matrix.platform == 'windows' }}
+        with:
+          name: release-${{ github.sha }}
+          path: '*.zip'
+      - uses: actions/upload-artifact@v2
+        if: {{ matrix.platform != 'windows' }}
+        with:
+          name: release-${{ github.sha }}
+          path: '*.tar.gz'
+      - uses: actions/upload-artifact@v2
+        with:
+          name: release-${{ github.sha }}
+          path: '*.sha256'
+      - uses: actions/upload-artifact@v2
+        with:
+          name: release-${{ github.sha }}
+          path: 'CHANGELOG.tip.md'
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: release-${{ github.sha }}
+      - uses: softprops/action-gh-release@v1
+        with:
+          body_path: CHANGELOG.tip.md
+          files: |
+            *.zip
+            *.tar.gz
+            *.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
