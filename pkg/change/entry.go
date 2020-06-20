@@ -43,25 +43,35 @@ func (e *Entry) IsAnonymous() bool {
 }
 
 func (e *Entry) Slug() string {
-	var slug string
+	if e.MergeRequest > 0 {
+		return e.MergeRequestString() + slugFiller + Slug(e.Title)
+	}
+
+	return Slug(e.Title)
+}
+
+func Slug(title string) string {
+	fill := false
 	slugger := func(r rune) rune {
 		switch {
 		case r >= 'A' && r <= 'Z':
+			fill = true
 			return r + 32
 		case r >= 'a' && r <= 'z':
+			fill = true
 			return r
 		case r >= '0' && r <= '9':
+			fill = true
 			return r
+		case fill:
+			fill = false
+			return rune(slugFiller[0])
 		}
-		return rune(slugFiller[0])
-	}
-	slug = strings.Trim(strings.Map(slugger, e.Title), slugFiller)
 
-	if e.MergeRequest > 0 {
-		return e.MergeRequestString() + slugFiller + slug
+		return -1
 	}
 
-	return slug
+	return strings.TrimRight(strings.Map(slugger, title), slugFiller)
 }
 
 func DefaultAuthor() string {
