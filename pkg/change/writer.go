@@ -21,7 +21,11 @@ type Writer struct {
 }
 
 func (w *Writer) Write(e *Entry) (string, error) {
-	path := filepath.Join(w.UnreleasedDir, e.Slug()+FilenameExtension)
+	return w.WriteFile(e, e.Slug()+FilenameExtension)
+}
+
+func (w *Writer) WriteFile(e *Entry, filename string) (string, error) {
+	path := filepath.Join(w.UnreleasedDir, filename)
 
 	if _, err := os.Stat(path); err == nil {
 		if !w.Force {
