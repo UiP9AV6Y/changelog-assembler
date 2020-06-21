@@ -1,0 +1,25 @@
+# Maintainer: Gordon Bleux <UiP9AV6Y+arch@protonmail.com>
+
+pkgname=changelog-assembler
+pkgdesc="Changelog assembly utility"
+pkgver=0.1.0
+pkgrel=1
+arch=('x86_64')
+url="https://github.com/UiP9AV6Y/changelog-assembler"
+license=('MIT')
+depends=('glibc')
+makedepends=('go' 'git')
+source=(${pkgname}-${pkgver}.tar.gz::https://github.com/UiP9AV6Y/${pkgname}/archive/${pkgver}.tar.gz)
+sha512sums=('266702455e9fe11dd43fa4050f8f9df05b40c7803e076fa29b076523c2da829e1684b37bc97ce08c0d8c340a2c1599d837234611d8ea0b7586852bf9aa2b285e')
+
+build() {
+  cd "${srcdir}"/${pkgname}-${pkgver}
+  make out/${pkgname} docs/${pkgname}.1 VERSION=${pkgver} COMMIT=arch${pkgrel}
+}
+
+package() {
+  cd "${srcdir}"/${pkgname}-${pkgver}
+  install -Dm755 out/${pkgname} "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install -Dm644 docs/*.1 -t "${pkgdir}/usr/share/man/man1"
+}
