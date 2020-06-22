@@ -100,8 +100,7 @@ release: CHANGELOG.md $(wildcard ./changelogs/unreleased/*.yml) $(CHLOG)
 
 $(GOBIN)/%:
 	# go install -v -tags tools ./...
-	- grep '_ "' tools/tools.go | \
-		awk '{ print $$2 }' | \
+	$(GO) list -tags tools -f '{{range .Imports}}{{ . }} {{end}}' ./tools | \
 		xargs -n1 $(GO) install -v
 
 $(BUILD_DIR)/%: $(GO_SOURCES)
