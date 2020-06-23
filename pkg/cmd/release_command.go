@@ -66,6 +66,8 @@ func decorateReleaseFlags(cmd *cobra.Command,
 	cmd.Flags().StringVarP(&renderer.OutputFile, "file", "f", renderer.OutputFile, "File to use for assembly")
 	cmd.Flags().StringVarP(&renderer.TemplateFile, "template", "t", renderer.TemplateFile, "Custom template to render changelog fragment")
 	cmd.Flags().BoolVarP(&renderer.GroupComponents, "group-components", "c", renderer.GroupComponents, "Group changes by their affected components")
+	cmd.Flags().StringVarP(&renderer.StartDelimiterTemplate, "start-delimiter", "S", "", "Delimiter which introduces a version section")
+	cmd.Flags().StringVarP(&renderer.EndDelimiterTemplate, "end-delimiter", "E", "", "Delimiter which terminates a version section")
 	_ = cmd.MarkFlagDirname("directory")
 	_ = cmd.MarkFlagFilename("file")
 	_ = cmd.MarkFlagFilename("template")

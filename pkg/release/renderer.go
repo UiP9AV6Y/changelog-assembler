@@ -15,9 +15,11 @@ const (
 )
 
 type Renderer struct {
-	OutputFile      string
-	TemplateFile    string
-	GroupComponents bool
+	OutputFile             string
+	TemplateFile           string
+	GroupComponents        bool
+	StartDelimiterTemplate string
+	EndDelimiterTemplate   string
 
 	writers io.IOFactory
 }
@@ -57,10 +59,10 @@ func (r *Renderer) newTemplate() (*template.Template, error) {
 }
 
 func (r *Renderer) writeData(data *RenderContext, tpl *template.Template, writer sysio.WriteCloser) (err error) {
-	startDelimiter := fmt.Sprintf(StartDelimiterTemplate, data.Version)
-	endDelimiter := fmt.Sprintf(EndDelimiterTemplate, data.Version)
+	startDelimiter := []byte(fmt.Sprintf(r.StartDelimiterTemplate, data.Version))
+	endDelimiter := []byte(fmt.Sprintf(r.EndDelimiterTemplate, data.Version))
 
-	if _, err := io.WriteLine(writer, []byte(startDelimiter)); err != nil {
+	if _, err := io.WriteLine(writer, startDelimiter); err != nil {
 		return err
 	}
 
@@ -68,7 +70,7 @@ func (r *Renderer) writeData(data *RenderContext, tpl *template.Template, writer
 		return err
 	}
 
-	if _, err := io.WriteLine(writer, []byte(endDelimiter)); err != nil {
+	if _, err := io.WriteLine(writer, endDelimiter); err != nil {
 		return err
 	}
 
@@ -77,8 +79,10 @@ func (r *Renderer) writeData(data *RenderContext, tpl *template.Template, writer
 
 func NewRenderer(writers io.IOFactory) *Renderer {
 	renderer := &Renderer{
-		OutputFile: DefaultOutputFile,
-		writers:    writers,
+		StartDelimiterTemplate: StartDelimiterTemplate,
+		EndDelimiterTemplate:   EndDelimiterTemplate,
+		OutputFile:             DefaultOutputFile,
+		writers:                writers,
 	}
 
 	return renderer

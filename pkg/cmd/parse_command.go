@@ -50,6 +50,8 @@ func decorateParseFlags(cmd *cobra.Command,
 		parser.InputFile = value
 	}
 
+	cmd.Flags().StringVarP(&parser.StartDelimiterTemplate, "start-delimiter", "S", "", "Delimiter which introduces a version section")
+	cmd.Flags().StringVarP(&parser.EndDelimiterTemplate, "end-delimiter", "E", "", "Delimiter which terminates a version section")
 	cmd.Flags().StringVarP(&parser.InputFile, "file", "f", parser.InputFile, "File to process")
 	_ = cmd.MarkFlagFilename("file")
 }

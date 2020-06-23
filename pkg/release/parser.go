@@ -10,8 +10,10 @@ import (
 )
 
 type Parser struct {
-	InputFile  string
-	OutputFile string
+	InputFile              string
+	OutputFile             string
+	StartDelimiterTemplate string
+	EndDelimiterTemplate   string
 
 	ios io.IOFactory
 }
@@ -44,8 +46,8 @@ func (p *Parser) Read(version string) (err error) {
 }
 
 func (p *Parser) parseSection(version string, reader sysio.Reader, writer sysio.Writer) error {
-	startDelimiter := []byte(fmt.Sprintf(StartDelimiterTemplate, version))
-	endDelimiter := []byte(fmt.Sprintf(EndDelimiterTemplate, version))
+	startDelimiter := []byte(fmt.Sprintf(p.StartDelimiterTemplate, version))
+	endDelimiter := []byte(fmt.Sprintf(p.EndDelimiterTemplate, version))
 	scanner := bufio.NewScanner(reader)
 	found := false
 
@@ -76,9 +78,11 @@ func (p *Parser) parseSection(version string, reader sysio.Reader, writer sysio.
 
 func NewParser(ios io.IOFactory) *Parser {
 	parser := &Parser{
-		InputFile:  DefaultOutputFile,
-		OutputFile: io.ProtoStdout,
-		ios:        ios,
+		StartDelimiterTemplate: StartDelimiterTemplate,
+		EndDelimiterTemplate:   EndDelimiterTemplate,
+		InputFile:              DefaultOutputFile,
+		OutputFile:             io.ProtoStdout,
+		ios:                    ios,
 	}
 
 	return parser
