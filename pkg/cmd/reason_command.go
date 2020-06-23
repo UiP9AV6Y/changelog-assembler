@@ -12,6 +12,7 @@ import (
 )
 
 type ReasonCommand struct {
+	Annotations  []string
 	Reason       change.Reason
 	Component    string
 	MergeRequest int
@@ -29,6 +30,7 @@ func (c *ReasonCommand) RunE(_ *cobra.Command, args []string) error {
 	entry.Reason = c.Reason
 	entry.Component = c.Component
 	entry.MergeRequest = c.MergeRequest
+	entry.Annotations = change.ParseAnnotations(c.Annotations)
 
 	if path, err := c.writer.Write(entry); err != nil {
 		return err
@@ -69,6 +71,7 @@ func decorateReasonFlags(cmd *cobra.Command,
 		writer.UnreleasedDir = value
 	}
 
+	cmd.Flags().StringArrayVarP(&store.Annotations, "annotation", "a", store.Annotations, "Arbitrary annotations to attach to the entry")
 	cmd.Flags().IntVarP(&store.MergeRequest, "merge-request", "r", store.MergeRequest, "Merge request this change is related to")
 	cmd.Flags().StringVarP(&store.Component, "component", "c", store.Component, "Application component this change is related to")
 	cmd.Flags().StringVarP(&writer.UnreleasedDir, "directory", "d", writer.UnreleasedDir, "Directory to write the changelog to")

@@ -12,6 +12,8 @@ import (
 )
 
 type CreateCommand struct {
+	Annotations []string
+
 	writer *change.Writer
 
 	CommandBase
@@ -23,6 +25,7 @@ func (c *CreateCommand) RunE(_ *cobra.Command, args []string) error {
 
 	entry.Title = strings.Join(args, " ")
 	entry.Author = change.DefaultAuthor()
+	entry.Annotations = change.ParseAnnotations(c.Annotations)
 
 	if ok, err := prompt.Run(entry); err != nil {
 		return err
@@ -56,7 +59,7 @@ func NewCreateCommand(output io.EntityWriter) *CreateCommand {
 		DisableAutoGenTag: true,
 	}
 
-	decorateCreateFlags(cmd, writer)
+	decorateCreateFlags(cmd, writer, command)
 
 	command.command = cmd
 
@@ -64,11 +67,13 @@ func NewCreateCommand(output io.EntityWriter) *CreateCommand {
 }
 
 func decorateCreateFlags(cmd *cobra.Command,
-	writer *change.Writer) {
+	writer *change.Writer,
+	store *CreateCommand) {
 	if value := os.Getenv(EnvUnreleasedDir); len(value) != 0 {
 		writer.UnreleasedDir = value
 	}
 
+	cmd.Flags().StringArrayVarP(&store.Annotations, "annotation", "a", store.Annotations, "Arbitrary annotations to attach to the entry")
 	cmd.Flags().StringVarP(&writer.UnreleasedDir, "directory", "d", writer.UnreleasedDir, "Directory to write the changelog to")
 	_ = cmd.MarkFlagDirname("directory")
 }

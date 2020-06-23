@@ -11,11 +11,12 @@ import (
 const slugFiller = "-"
 
 type Entry struct {
-	Title        string `yaml:"title"`
-	Author       string `yaml:"author"`
-	Reason       Reason `yaml:"reason"`
-	Component    string `yaml:"component,omitempty"`
-	MergeRequest int    `yaml:"merge_request,omitempty"`
+	Title        string            `yaml:"title"`
+	Author       string            `yaml:"author"`
+	Reason       Reason            `yaml:"reason"`
+	Component    string            `yaml:"component,omitempty"`
+	MergeRequest int               `yaml:"merge_request,omitempty"`
+	Annotations  map[string]string `yaml:"annotations,omitempty"`
 }
 
 func (e *Entry) String() string {
@@ -48,6 +49,14 @@ func (e *Entry) Slug() string {
 	}
 
 	return Slug(e.Title)
+}
+
+func (e *Entry) GetAnnotation(key, fallback string) string {
+	if value, ok := e.Annotations[key]; ok {
+		return value
+	}
+
+	return fallback
 }
 
 func Slug(title string) string {
