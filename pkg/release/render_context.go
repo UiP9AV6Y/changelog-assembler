@@ -18,7 +18,11 @@ type RenderContext struct {
 }
 
 func (c *RenderContext) Date() string {
-	return c.date.Format(VersionDateFormat)
+	return c.DateF(VersionDateFormat)
+}
+
+func (c *RenderContext) DateF(format string) string {
+	return c.date.Format(format)
 }
 
 func NewRenderContext(version string, entries change.Entries) *RenderContext {

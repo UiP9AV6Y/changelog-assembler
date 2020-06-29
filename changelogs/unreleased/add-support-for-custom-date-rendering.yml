@@ -1,0 +1,4 @@
+title: Add support for custom date rendering
+author: Gordon Bleux
+reason: added
+component: Renderer
