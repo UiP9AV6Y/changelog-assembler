@@ -1,0 +1,4 @@
+title: Cache default author lookup
+author: Gordon Bleux
+reason: performance
+component: Renderer

@@ -4,11 +4,16 @@ import (
 	"os/user"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/UiP9AV6Y/changelog-assembler/pkg/util"
 )
 
 const slugFiller = "-"
+var (
+	defaultAuthorValue string
+	defaultAuthorLookup sync.Once
+)
 
 type Entry struct {
 	Title        string            `yaml:"title"`
@@ -83,16 +88,25 @@ func Slug(title string) string {
 	return strings.TrimRight(strings.Map(slugger, title), slugFiller)
 }
 
+// DefaultAuthor attempts to retrieve a name to assign to changes.
+//
+// It searches the version control configuration first, before
+// turning to system information. If no suitable information can
+// be found or exists, an empty string is returned.
 func DefaultAuthor() string {
+	defaultAuthorLookup.Do(defaultAuthor)
+
+	return defaultAuthorValue
+}
+
+func defaultAuthor() {
 	if name := util.GitUsername(); len(name) > 0 {
-		return name
+		defaultAuthorValue = name
 	}
 
 	if user, err := user.Current(); err != nil {
-		return user.Username
+		defaultAuthorValue = user.Username
 	}
-
-	return ""
 }
 
 func NewEntry() *Entry {
