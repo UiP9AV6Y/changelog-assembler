@@ -12,6 +12,7 @@ const (
 
 type RenderContext struct {
 	Version string
+	Author  string
 	Notes   string
 	Entries change.Entries
 	date    *time.Time
@@ -27,9 +28,11 @@ func (c *RenderContext) DateF(format string) string {
 
 func NewRenderContext(version string, entries change.Entries) *RenderContext {
 	date := time.Now()
+	author := change.DefaultAuthor()
 	templateData := &RenderContext{
 		Version: version,
 		Entries: entries,
+		Author:  author,
 		date:    &date,
 	}
 

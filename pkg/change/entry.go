@@ -96,7 +96,10 @@ func DefaultAuthor() string {
 }
 
 func NewEntry() *Entry {
-	entry := &Entry{}
+	author := DefaultAuthor()
+	entry := &Entry{
+		Author: author,
+	}
 
 	return entry
 }

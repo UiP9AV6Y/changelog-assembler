@@ -26,7 +26,6 @@ func (c *ReasonCommand) RunE(_ *cobra.Command, args []string) error {
 	entry := change.NewEntry()
 
 	entry.Title = strings.Join(args, " ")
-	entry.Author = change.DefaultAuthor()
 	entry.Reason = c.Reason
 	entry.Component = c.Component
 	entry.MergeRequest = c.MergeRequest

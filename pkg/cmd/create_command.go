@@ -24,7 +24,6 @@ func (c *CreateCommand) RunE(_ *cobra.Command, args []string) error {
 	prompt := change.NewEntryPrompt(change.TargetUiApi())
 
 	entry.Title = strings.Join(args, " ")
-	entry.Author = change.DefaultAuthor()
 	entry.Annotations = change.ParseAnnotations(c.Annotations)
 
 	if ok, err := prompt.Run(entry); err != nil {
