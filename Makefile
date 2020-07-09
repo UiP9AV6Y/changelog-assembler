@@ -48,6 +48,11 @@ GO_LDFLAGS += -w -s # Drop debugging symbols.
 GO_LDFLAGS += -buildid= # Reproducable builds
 GO_LDFLAGS += '
 
+DOC_TYPES := md 1
+DOCS := $(foreach EXT,$(DOC_TYPES),$(addsuffix .$(EXT),$(GO_CMDS)))
+COMPLETION_TYPES := bash fish zsh ps
+COMPLETIONS := $(foreach EXT,$(COMPLETION_TYPES),$(addsuffix .$(EXT),$(GO_CMDS)))
+
 ifeq ($(GOOS),windows)
 	PROGRAMS := $(addsuffix .exe,$(GO_CMDS))
 	BINARY_DIST_EXT := zip
@@ -82,7 +87,16 @@ test: $(GO_SOURCES)
 	@$(GO) test $(GO_PACKAGES)
 
 .PHONY: build
+build: build-binary build-docs build-completions
+
+.PHONY: build-binary
 build: $(addprefix $(BUILD_DIR)/,$(PROGRAMS))
+
+.PHONY: build-docs
+build-docs: $(addprefix docs/,$(DOCS))
+
+.PHONY: build-completions
+build-completions: $(addprefix completions/,$(COMPLETIONS))
 
 .PHONY: binary-dist
 binary-dist: $(BINARY_DIST_NAME).$(BINARY_DIST_EXT) $(BINARY_DIST_NAME).$(BINARY_DIST_EXT).sha256
@@ -116,11 +130,14 @@ CHANGELOG.tip.md: CHANGELOG.md $(CHLOG)
 CHANGELOG.%.md: CHANGELOG.md $(CHLOG)
 	$(CHLOG) parse --file $< $* > $@
 
-docs/%.md: $(GO_SOURCES)
-	$(GO) run docs/generator.go -m -o $(dir $@)
+completions/%.bash completions/%.fish completions/%.zsh completions/%.ps: completions/generator.go $(GO_SOURCES)
+	$(GO) run $< -o $(dir $@) $(suffix $@)
 
-docs/%.1: $(GO_SOURCES)
-	$(GO) run docs/generator.go -o $(dir $@)
+docs/%.md: docs/generator.go $(GO_SOURCES)
+	$(GO) run $< -m -o $(dir $@)
+
+docs/%.1: docs/generator.go $(GO_SOURCES)
+	$(GO) run $< -o $(dir $@)
 
 $(CHANGELOGS_DIR):
 	$(INSTALL) -d $@

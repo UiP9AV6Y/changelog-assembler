@@ -14,7 +14,8 @@ sha512sums=('266702455e9fe11dd43fa4050f8f9df05b40c7803e076fa29b076523c2da829e168
 
 build() {
   cd "${srcdir}"/${pkgname}-${pkgver}
-  make out/${pkgname} docs/${pkgname}.1 VERSION=${pkgver} COMMIT=arch${pkgrel}
+  make build \
+    VERSION=${pkgver} COMMIT=arch${pkgrel}
 }
 
 package() {
@@ -22,4 +23,7 @@ package() {
   install -Dm755 out/${pkgname} "${pkgdir}/usr/bin/${pkgname}"
   install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
   install -Dm644 docs/*.1 -t "${pkgdir}/usr/share/man/man1"
+  install -Dm644 "completions/${pkgname}.bash" "${pkgdir}/usr/share/bash-completion/completions/${pkgname}"
+  install -Dm644 "completions/${pkgname}.fish" "${pkgdir}/usr/share/fish/completions/${pkgname}.fish"
+  install -Dm644 "completions/${pkgname}.zsh" "${pkgdir}/usr/share/zsh/site-functions/_${pkgname}"
 }
