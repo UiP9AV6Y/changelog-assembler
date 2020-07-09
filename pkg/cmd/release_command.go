@@ -60,8 +60,12 @@ func decorateReleaseFlags(cmd *cobra.Command,
 	if value := os.Getenv(EnvGroupComponents); len(value) != 0 {
 		renderer.GroupComponents = true
 	}
+	if value := os.Getenv(EnvGroupAuthor); len(value) != 0 {
+		changelog.Author = value
+	}
 
 	cmd.Flags().BoolVarP(&changelog.RetainInput, "keep", "k", changelog.RetainInput, "Do not delete changelog fragments after assembly")
+	cmd.Flags().StringVarP(&changelog.Author, "author", "A", changelog.Author, "Name to associate with this release")
 	cmd.Flags().StringVarP(&changelog.UnreleasedDir, "directory", "d", changelog.UnreleasedDir, "Directory to read the unreleased changelogs from")
 	cmd.Flags().StringVarP(&renderer.OutputFile, "file", "f", renderer.OutputFile, "File to use for assembly")
 	cmd.Flags().StringVarP(&renderer.TemplateFile, "template", "t", renderer.TemplateFile, "Custom template to render changelog fragment")

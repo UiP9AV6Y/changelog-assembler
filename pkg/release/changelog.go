@@ -10,6 +10,7 @@ import (
 )
 
 type Changelog struct {
+	Author        string
 	UnreleasedDir string
 	RetainInput   bool
 
@@ -78,12 +79,16 @@ func (w *Changelog) removeFiles(files []string) error {
 func (w *Changelog) writeRelease(version string, entries change.Entries) error {
 	data := NewRenderContext(version, entries)
 
+	data.Author = w.Author
+
 	return w.output.Write(data)
 }
 
 func NewChangelog(input io.EntityReader, output *Renderer) *Changelog {
+	author := change.DefaultAuthor()
 	writer := &Changelog{
 		UnreleasedDir: change.DefaultUnreleasedDir,
+		Author:        author,
 		input:         input,
 		output:        output,
 	}

@@ -12,6 +12,7 @@ import (
 )
 
 type CreateCommand struct {
+	Author      string
 	Annotations []string
 
 	writer *change.Writer
@@ -24,6 +25,7 @@ func (c *CreateCommand) RunE(_ *cobra.Command, args []string) error {
 	prompt := change.NewEntryPrompt(change.TargetUiApi())
 
 	entry.Title = strings.Join(args, " ")
+	entry.Author = c.Author
 	entry.Annotations = change.ParseAnnotations(c.Annotations)
 
 	if ok, err := prompt.Run(entry); err != nil {
@@ -44,7 +46,9 @@ func (c *CreateCommand) RunE(_ *cobra.Command, args []string) error {
 
 func NewCreateCommand(output io.EntityWriter) *CreateCommand {
 	writer := change.NewWriter(output)
+	author := change.DefaultAuthor()
 	command := &CreateCommand{
+		Author: author,
 		writer: writer,
 	}
 	cmd := &cobra.Command{
@@ -70,6 +74,9 @@ func decorateCreateFlags(cmd *cobra.Command,
 	store *CreateCommand) {
 	if value := os.Getenv(EnvUnreleasedDir); len(value) != 0 {
 		writer.UnreleasedDir = value
+	}
+	if value := os.Getenv(EnvGroupAuthor); len(value) != 0 {
+		writer.Author = value
 	}
 
 	cmd.Flags().StringArrayVarP(&store.Annotations, "annotation", "a", store.Annotations, "Arbitrary annotations to attach to the entry")
